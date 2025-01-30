@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Upload, Box, Layers, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface SidebarProps {
