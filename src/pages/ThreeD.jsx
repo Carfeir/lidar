@@ -30,16 +30,15 @@ const ThreeD = () => {
     viewer.getControls().enabled = true;
     viewer.setDescription("");
 
-    // Cargar la GUI y asegurarse de que no se duplique
-    viewer.loadGUI(() => {
-      const existingMenu = document.querySelector("#potree_sidebar_container .potree_menu");
-      if (!existingMenu) { // Solo modifica si no existe el menú
+    // Cargar la GUI y evitar duplicados
+    if (!document.querySelector("#potree_profile_rotate_amount")) {
+      viewer.loadGUI(() => {
         viewer.setLanguage('en');
         $("#menu_appearance").next().show();
         $("#menu_tools").next().show();
         $("#menu_clipping").next().show();
-      }
-    });
+      });
+    }
 
     // Carga de la nube de puntos
     Potree.loadPointCloud('/pointcloud/metadata.json', 'pointcloud')
