@@ -60,7 +60,7 @@ const ThreeD = () => {
   }, []);
 
   return (
-    <div className="potree_container" ref={containerRef} style={{ width: '100%', height: '100%' }}>
+    <div className="potree_container" ref={containerRef} style={{ position: "relative", width: '100%', height: '100%' }}>
       <div id="potree_render_area" style={{ zIndex: 1, pointerEvents: 'none' }}></div>
       <div id="potree_sidebar_container" style={{ zIndex: 100 }}></div>
     </div>
