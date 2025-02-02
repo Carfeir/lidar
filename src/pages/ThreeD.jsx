@@ -33,8 +33,6 @@ const ThreeD = () => {
         $("#menu_appearance").next().show();
         $("#menu_tools").next().show();
         $("#menu_clipping").next().show();
-
-        // viewer.toggleSidebar();
       });
 
       // Carga de la nube de puntos
@@ -56,27 +54,15 @@ const ThreeD = () => {
 
   return (
     <div className="potree_container" ref={containerRef} style={{
-      // position: 'absolute',
-      // width: 'calc(100% - 200px)',
       width: '100%',
       height: '100%',
-      // left: '200px',  // Assuming sidebar width is 200px. Adjust as needed
-      // top: 0,
-      // display: 'flex',  // Establecer flex para que los hijos estén alineados
     }}>
       <div id="potree_render_area" style={{
-        // width: '100%',
-        // height: '100%',
         zIndex: 1,
         pointerEvents: 'none' // ✅ Permite que el sidebar reciba clics
       }}></div>
 
       <div id="potree_sidebar_container" style={{
-        // position: 'absolute',
-        // left: 0,
-        // top: 0,
-        // width: '500px',
-        // height: '100%',
         zIndex: 100,  // ✅ Asegurar que el sidebar esté por encima
       }}></div>
     </div>
