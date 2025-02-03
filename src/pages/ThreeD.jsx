@@ -31,14 +31,14 @@ const ThreeD = () => {
     viewer.setDescription("");
 
     // Cargar la GUI y evitar duplicados
-    if (!document.querySelector("#potree_profile_rotate_amount")) {
+    // if (!document.querySelector("#potree_profile_rotate_amount")) {
       viewer.loadGUI(() => {
         viewer.setLanguage('en');
         $("#menu_appearance").next().show();
         $("#menu_tools").next().show();
         $("#menu_clipping").next().show();
       });
-    }
+    // }
 
     // Carga de la nube de puntos
     Potree.loadPointCloud('/pointcloud/metadata.json', 'pointcloud')
