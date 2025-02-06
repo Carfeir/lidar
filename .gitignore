@@ -23,12 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
-public/pointcloud/
+# Ignorar archivos grandes
+public/pointcloud/*
+uploads/*
 *.laz
-*.las
 *.ply
-
-uploads/
-*.laz
-*.las
-*.ply
+*.bin
