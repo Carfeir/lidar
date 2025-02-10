@@ -1,5 +1,6 @@
 import express from 'express';
 import multer from 'multer';
+import os from 'os';
 import path from 'path';
 import { exec } from 'child_process';
 import { fileURLToPath } from 'url';  // Importa fileURLToPath
@@ -11,6 +12,11 @@ import cors from 'cors';
 const app = express();
 // Establece el puerto de la aplicación
 const PORT = process.env.PORT || 3000;
+
+const isWindows = os.platform() === "win32";
+const potreePath = isWindows
+    ? "PotreeConverter.exe"
+    : path.join(__dirname, "bin/linux/PotreeConverter");
 
 app.use(cors());
 
@@ -39,8 +45,8 @@ app.get('/checkFileExists', (req, res) => {
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
             console.error('Error accessing file:', err);
-            res.status(404).json({ 
-                exists: false, 
+            res.status(404).json({
+                exists: false,
                 error: {
                     message: 'File not found',
                     details: err.message
@@ -67,7 +73,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
 
     // Comando de PotreeConverter
     // const potreeCmd = `PotreeConverter.exe "${tempFilePath}" -o "${outputDir}" -l 5 --output-format POTREE --generate-page cloud --material ELEVATION`;
-    const potreeCmd = `PotreeConverter.exe ${tempFilePath} -o ${outputDir} -l 5`;
+    const potreeCmd = `${potreePath} ${tempFilePath} -o ${outputDir} -l 5`;
 
     // Muestra el comando en consola
     console.log(`Running PotreeConverter with command: ${potreeCmd}`);
