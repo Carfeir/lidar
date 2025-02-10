@@ -13,17 +13,59 @@ const app = express();
 // Establece el puerto de la aplicación
 const PORT = process.env.PORT || 3000;
 
+// Obtén el directorio actual de la forma adecuada para módulos ES
+// Para obtener el directorio actual utilizando fileURLToPath y dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const isWindows = os.platform() === "win32";
 const potreePath = isWindows
     ? "PotreeConverter.exe"
     : path.join(__dirname, "bin/linux/PotreeConverter");
 
+console.log(`Using PotreeConverter path: ${potreePath}`);
+
 app.use(cors());
 
-// Obtén el directorio actual de la forma adecuada para módulos ES
-// Para obtener el directorio actual utilizando fileURLToPath y dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Verificamos si no estamos en un sistema Windows
+if (!isWindows) {
+    // Comando para verificar si el archivo PotreeConverter tiene permisos de ejecución
+    const checkPermissionCmd = `test -x ${potreePath}`;
+
+    // Ejecutamos el comando para comprobar los permisos de ejecución del archivo
+    exec(checkPermissionCmd, (error, stdout, stderr) => {
+        // Si el comando falla (es decir, no tiene permisos de ejecución), ejecutamos el bloque de código dentro de 'if (error)'
+        if (error) {
+            // Mostramos en consola que el archivo no tiene permisos de ejecución
+            console.log(`No execute permission, setting chmod for ${potreePath}`);
+
+            // Comando para dar permisos de ejecución al archivo PotreeConverter
+            const chmodCmd = `chmod +x ${potreePath}`;
+
+            // Ejecutamos el comando chmod para agregar los permisos de ejecución
+            exec(chmodCmd, (error, stdout, stderr) => {
+                // Si ocurre un error al intentar cambiar los permisos, mostramos el mensaje de error
+                if (error) {
+                    console.error(`Error setting executable permission: ${error.message}`);
+                    return; // Salimos de la función si hubo un error al cambiar los permisos
+                }
+
+                // Si hay algún error estándar en el comando chmod, lo mostramos
+                if (stderr) {
+                    console.error(`stderr: ${stderr}`);
+                    return;
+                }
+
+                // Si todo salió bien, mostramos la salida estándar del comando chmod
+                console.log(`stdout: ${stdout}`);
+            });
+        } else {
+            // Si el archivo ya tiene permisos de ejecución, mostramos un mensaje confirmando esto
+            console.log(`${potreePath} already has execute permissions.`);
+        }
+    });
+}
+
 
 // Configura multer para manejar las subidas de archivos
 const storage = multer.diskStorage({
