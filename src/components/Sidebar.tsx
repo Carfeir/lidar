@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { Upload, Box, Layers, ChevronLeft, ChevronRight } from "lucide-react";
+import { Box, Layers, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface SidebarProps {
-  currentPage: "upload" | "3d" | "2d";
-  setCurrentPage: (page: "upload" | "3d" | "2d") => void;
+  currentPage: "3d" | "2d";
+  setCurrentPage: (page: "3d" | "2d") => void;
 }
 
 export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
   const items = [
-    { id: "upload", label: "Upload", icon: Upload },
     { id: "3d", label: "3D View", icon: Box },
     { id: "2d", label: "2D View", icon: Layers },
   ] as const;
