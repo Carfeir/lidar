@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Upload } from "lucide-react";
 
 const ThreeD = () => {
   const containerRef = useRef(null);
@@ -43,10 +42,6 @@ const ThreeD = () => {
   useEffect(() => {
     if (!containerRef.current || viewerRef.current) return;
 
-    // Limpiar el sidebar antes de cargar la GUI
-    const sidebarContainer = document.getElementById("potree_sidebar_container");
-    if (sidebarContainer) sidebarContainer.innerHTML = "";
-
     // Inicialización de la escena
     const viewer = new Potree.Viewer(containerRef.current);
     viewerRef.current = viewer;
@@ -66,12 +61,30 @@ const ThreeD = () => {
     viewer.getControls().enabled = true;
     viewer.setDescription("");
 
+    // Limpiar el sidebar antes de cargar la GUI
+    const sidebarContainer = document.getElementById("potree_sidebar_container");
+    if (sidebarContainer) sidebarContainer.innerHTML = "";
+
     // Cargar la GUI y evitar duplicados
     viewer.loadGUI(() => {
       viewer.setLanguage('en');
       $("#menu_appearance").next().show();
       $("#menu_tools").next().show();
       $("#menu_clipping").next().show();
+
+      const containerIds = ["tools", "clipping_tools", "navigation"];
+      const defaultStyles = {
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "0px"
+      };
+
+      containerIds.forEach(id => {
+        const container = document.getElementById(id);
+        if (container) {
+          Object.assign(container.style, defaultStyles);
+        }
+      });
     });
 
     // Cargar la nube de puntos por defecto
