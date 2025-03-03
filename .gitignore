@@ -25,7 +25,6 @@ dist-ssr
 
 # Ignorar archivos grandes
 public/pointcloud/*
-uploads/*
-*.laz
-*.ply
-*.bin
+potree/examples/*
+potree/pointclouds/*
+
