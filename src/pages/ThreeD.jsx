@@ -25,18 +25,54 @@ const ThreeD = () => {
         });
 
         if (response.ok) {
-          setMessage('File uploaded successfully. Processing...');
-          window.location.reload();
+          setMessage('File uploaded successfully. Loading point cloud...');
+          if (viewerRef.current) {
+            loadNewPointCloud('/pointcloud/metadata.json');
+          }
         } else {
           const errorText = await response.text();
           setMessage(`Upload failed: ${errorText}`);
+          setTimeout(() => setMessage(''), 3000);
         }
       } catch (error) {
         setMessage(`Error during upload: ${error.message}`);
+        setTimeout(() => setMessage(''), 3000);
       } finally {
         setUploading(false);
       }
     }
+  };
+
+  const loadNewPointCloud = (url) => {
+    const viewer = viewerRef.current;
+    if (!viewer) return;
+
+    setIsLoading(true);
+    viewer.scene.pointclouds.forEach((layer) => {
+      viewer.scene.scenePointCloud.remove(layer);
+    });
+    viewer.scene.pointclouds = [];
+
+    Potree.loadPointCloud(url, 'new_pointcloud')
+      .then((e) => {
+        const pointcloud = e.pointcloud;
+        const material = pointcloud.material;
+        material.activeAttributeName = "rgba";
+        material.minSize = 2;
+        material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+
+        viewer.scene.addPointCloud(pointcloud);
+        viewer.fitToScreen();
+        setMessage('Point cloud loaded successfully!');
+        setTimeout(() => setMessage(''), 3000);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error loading point cloud:', error);
+        setMessage('Error loading point cloud');
+        setTimeout(() => setMessage(''), 3000);
+        setIsLoading(false);
+      });
   };
 
   useEffect(() => {
