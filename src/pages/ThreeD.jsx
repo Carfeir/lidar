@@ -8,6 +8,46 @@ const ThreeD = () => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false); // Nuevo estado para la pantalla de carga
 
+  const loadPointCloud = (url, isInitialLoad = false) => {
+    const viewer = viewerRef.current;
+    if (!viewer) return;
+
+    if (!isInitialLoad) {
+      setIsLoading(true);
+      // Limpiar las nubes de puntos existentes solo si no es la carga inicial
+      viewer.scene.pointclouds.forEach((layer) => {
+        viewer.scene.scenePointCloud.remove(layer);
+      });
+      viewer.scene.pointclouds = [];
+    }
+
+    Potree.loadPointCloud(url, isInitialLoad ? 'pointcloud' : 'new_pointcloud')
+      .then((e) => {
+        const pointcloud = e.pointcloud;
+        const material = pointcloud.material;
+        material.activeAttributeName = "rgba";
+        material.minSize = 2;
+        material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+
+        viewer.scene.addPointCloud(pointcloud);
+        viewer.fitToScreen();
+
+        if (!isInitialLoad) {
+          setMessage('Point cloud loaded successfully!');
+          setTimeout(() => setMessage(''), 3000);
+          setIsLoading(false);
+        }
+      })
+      .catch((error) => {
+        console.error('Error loading point cloud:', error);
+        if (!isInitialLoad) {
+          setMessage('Error loading point cloud');
+          setTimeout(() => setMessage(''), 3000);
+          setIsLoading(false);
+        }
+      });
+  };
+
   const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
@@ -27,7 +67,7 @@ const ThreeD = () => {
         if (response.ok) {
           setMessage('File uploaded successfully. Loading point cloud...');
           if (viewerRef.current) {
-            loadNewPointCloud('/pointcloud/metadata.json');
+            loadPointCloud('/pointcloud/metadata.json');
           }
         } else {
           const errorText = await response.text();
@@ -41,38 +81,6 @@ const ThreeD = () => {
         setUploading(false);
       }
     }
-  };
-
-  const loadNewPointCloud = (url) => {
-    const viewer = viewerRef.current;
-    if (!viewer) return;
-
-    setIsLoading(true);
-    viewer.scene.pointclouds.forEach((layer) => {
-      viewer.scene.scenePointCloud.remove(layer);
-    });
-    viewer.scene.pointclouds = [];
-
-    Potree.loadPointCloud(url, 'new_pointcloud')
-      .then((e) => {
-        const pointcloud = e.pointcloud;
-        const material = pointcloud.material;
-        material.activeAttributeName = "rgba";
-        material.minSize = 2;
-        material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
-
-        viewer.scene.addPointCloud(pointcloud);
-        viewer.fitToScreen();
-        setMessage('Point cloud loaded successfully!');
-        setTimeout(() => setMessage(''), 3000);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error loading point cloud:', error);
-        setMessage('Error loading point cloud');
-        setTimeout(() => setMessage(''), 3000);
-        setIsLoading(false);
-      });
   };
 
   useEffect(() => {
@@ -108,20 +116,8 @@ const ThreeD = () => {
       $("#menu_clipping").next().show();
     });
 
-    // Cargar la nube de puntos por defecto
-    Potree.loadPointCloud('/pointcloud/metadata.json', 'pointcloud')
-      .then(e => {
-        const pointcloud = e.pointcloud;
-        const material = pointcloud.material;
-
-        material.activeAttributeName = "rgba";
-        material.minSize = 2;
-        material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
-
-        viewer.scene.addPointCloud(pointcloud);
-        viewer.fitToScreen();
-      })
-      .catch(error => console.error('Error loading point cloud:', error));
+    // Carga inicial de la nube de puntos
+    loadPointCloud('/pointcloud/metadata.json', true);
 
     // Observador de redimensionamiento
     const resizeObserver = new ResizeObserver((entries) => {
