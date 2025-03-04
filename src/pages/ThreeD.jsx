@@ -6,6 +6,7 @@ const ThreeD = () => {
   const [files, setFile] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // Nuevo estado para la pantalla de carga
 
   const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
@@ -69,7 +70,6 @@ const ThreeD = () => {
       $("#menu_appearance").next().show();
       $("#menu_tools").next().show();
       $("#menu_clipping").next().show();
-      viewer.toggleSidebar();
     });
 
     // Cargar la nube de puntos por defecto
@@ -86,6 +86,18 @@ const ThreeD = () => {
         viewer.fitToScreen();
       })
       .catch(error => console.error('Error loading point cloud:', error));
+
+    // Observador de redimensionamiento
+    const resizeObserver = new ResizeObserver((entries) => {
+      setIsLoading(true); // Mostrar pantalla de carga
+      clearTimeout(window.resizeTimeout); // Limpiar timeout previo
+      window.resizeTimeout = setTimeout(() => {
+        setIsLoading(false); // Ocultar pantalla de carga después de 300ms
+        viewer.fitToScreen(); // Ajustar la vista al nuevo tamaño
+      }, 50); // Duración de la transición
+    });
+
+    resizeObserver.observe(renderAreaRef.current);
   }, []);
 
   return (
@@ -114,6 +126,19 @@ const ThreeD = () => {
         {message && (
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg" style={{ zIndex: 150 }}>
             {message}
+          </div>
+        )}
+
+        {/* Pantalla de carga */}
+        {isLoading && (
+          <div
+            className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75"
+            style={{ zIndex: 200 }}
+          >
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 border-4 border-t-4 border-t-blue-500 border-gray-300 rounded-full animate-spin" />
+              <p className="mt-4 text-white">Cargando...</p>
+            </div>
           </div>
         )}
       </div>
