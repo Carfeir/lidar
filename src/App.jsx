@@ -8,12 +8,12 @@ function App() {
 
   return (
     <div className="bg-gray-900 text-white h-screen flex overflow-hidden text-sm">
-      <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      {/* <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} /> */}
 
       <main className="flex-1 flex justify-center items-center">
         <div className="bg-gray-800 shadow-lg overflow-auto w-full h-full flex items-center justify-center">
-          {currentPage === '3d' && <ThreeD />}
-          {currentPage === '2d' && <TwoD />}
+          {currentPage === '3d' && <ThreeD setCurrentPage={setCurrentPage} />}
+          {currentPage === '2d' && <TwoD setCurrentPage={setCurrentPage} />}
         </div>
       </main>
     </div>

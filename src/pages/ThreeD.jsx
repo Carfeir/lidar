@@ -1,9 +1,10 @@
 // FIXME: boton annotations - Indica que hay un problema o funcionalidad incompleta con el botón de anotaciones de Potree que necesita ser resuelto.
 
 import React, { useEffect, useRef, useState } from 'react'; // Importa React y los hooks necesarios para manejar estado, efectos y referencias.
+import { Upload, Download, Box } from "lucide-react"; // Importa iconos de lucide-react
 
 // Componente principal para visualización 3D con Potree
-const ThreeD = () => {
+const ThreeD = ({ setCurrentPage }) => {
   // Referencias para elementos del DOM y el visor de Potree
   const viewerRef = useRef(null); // Referencia al objeto Potree.Viewer para controlar el visor
   const renderAreaRef = useRef(null); // Referencia al contenedor DOM donde se renderiza la nube de puntos
@@ -199,55 +200,73 @@ const ThreeD = () => {
 
   // Renderizado del componente
   return (
-    <div className="relative w-full h-full"> {/* Contenedor principal con posicionamiento relativo */}
-      {/* Contenedor de Potree */}
-      <div
-        className="potree_container"
-        style={{ position: "absolute", width: '100%', height: '100%', left: '0px', top: '0px' }} // Ocupa todo el espacio disponible
-      >
-        <div id="potree_render_area" ref={renderAreaRef}></div> {/* Área donde se renderiza la nube de puntos */}
-        <div id="potree_sidebar_container" ref={sidebarRef}></div> {/* Contenedor del sidebar de Potree */}
-
-        {/* Botones de interacción */}
-        <div className="absolute bottom-4 right-4 flex space-x-2" style={{ zIndex: 150 }}> {/* Botones en la esquina inferior derecha */}
-          <input
-            id="file-upload"
-            type="file"
-            onChange={handleFileChange} // Maneja la selección de archivos
-            style={{ display: 'none' }} // Oculta el input nativo
-          />
-          <label
-            htmlFor="file-upload"
-            className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg" // Estilo del botón de carga
-          >
-            Cargar Archivo
-          </label>
+    <>
+      <div className="absolute top-1 flex flex-col" style={{ zIndex: 150 }}> {/* Botones en la esquina inferior derecha */}
+        <div
+          className="flex items-center gap-2 bg-gray-700 text-white px-4 py-2 rounded-lg mt-4"
+        >
+          <Box size={20} /> 3D View
         </div>
-
-        {/* Mensaje de estado */}
-        {message && ( // Muestra el mensaje si existe
-          <div
-            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg"
-            style={{ zIndex: 150 }} // Centrado en la parte inferior
-          >
-            {message}
-          </div>
-        )}
-
-        {/* Pantalla de carga */}
-        {isLoading && ( // Muestra la pantalla de carga si está activa
-          <div
-            className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75"
-            style={{ zIndex: 200 }} // Cubre toda la pantalla
-          >
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 border-4 border-t-4 border-t-blue-500 border-gray-300 rounded-full animate-spin" /> {/* Spinner */}
-              <p className="mt-4 text-white">Cargando...</p> {/* Texto de carga */}
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+      <div className="relative w-full h-full"> {/* Contenedor principal con posicionamiento relativo */}
+        {/* Contenedor de Potree */}
+        <div
+          className="potree_container"
+          style={{ position: "absolute", width: '100%', height: '100%', left: '0px', top: '0px' }} // Ocupa todo el espacio disponible
+        >
+          <div id="potree_render_area" ref={renderAreaRef}></div> {/* Área donde se renderiza la nube de puntos */}
+          <div id="potree_sidebar_container" ref={sidebarRef}></div> {/* Contenedor del sidebar de Potree */}
+
+
+
+          {/* Botones de interacción */}
+          <div className="absolute bottom-4 right-4 flex flex-col space-y-2" style={{ zIndex: 150 }}> {/* Botones en la esquina inferior derecha */}
+            <input
+              id="file-upload"
+              type="file"
+              onChange={handleFileChange} // Maneja la selección de archivos
+              style={{ display: 'none' }} // Oculta el input nativo
+            />
+            <label
+              htmlFor="file-upload"
+              className="cursor-pointer flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+            >
+              <Upload size={20} /> Cargar Archivo
+            </label>
+
+            <button
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg mt-4"
+              onClick={() => setCurrentPage('2d')} // Cambia a TwoD
+            >
+              <Download size={20} /> Exportar Volumen
+            </button>
+          </div>
+
+          {/* Mensaje de estado */}
+          {message && ( // Muestra el mensaje si existe
+            <div
+              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg"
+              style={{ zIndex: 150 }} // Centrado en la parte inferior
+            >
+              {message}
+            </div>
+          )}
+
+          {/* Pantalla de carga */}
+          {isLoading && ( // Muestra la pantalla de carga si está activa
+            <div
+              className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75"
+              style={{ zIndex: 200 }} // Cubre toda la pantalla
+            >
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 border-4 border-t-4 border-t-blue-500 border-gray-300 rounded-full animate-spin" /> {/* Spinner */}
+                <p className="mt-4 text-white">Cargando...</p> {/* Texto de carga */}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 };
 
